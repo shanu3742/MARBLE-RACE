@@ -1,4 +1,4 @@
-import { useGLTF, useTexture } from '@react-three/drei';
+import { useGLTF, useTexture, Float, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { CuboidCollider, RigidBody } from '@react-three/rapier';
 import { useMemo, useRef, useState } from 'react';
@@ -8,14 +8,26 @@ enum rotationDirEnum {
     antiClockwise = 1
 }
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-const stepOneMaterial = new THREE.MeshStandardMaterial({ color: "limegreen" })
-const stepTwoMaterial = new THREE.MeshStandardMaterial({ color: "greenyellow" })
-const obstacleMaterial = new THREE.MeshStandardMaterial({ color: "orangered" })
-const wallMaterial = new THREE.MeshStandardMaterial({ color: "slategrey" })
+const stepOneMaterial = new THREE.MeshStandardMaterial({ color: "#111111" })
+const stepTwoMaterial = new THREE.MeshStandardMaterial({ color: "#222222" })
+const obstacleMaterial = new THREE.MeshStandardMaterial({ color: "#ff0000" })
+const wallMaterial = new THREE.MeshStandardMaterial({ color: "#887777" })
 
 export const BlockStart = ({ position = [0, 0, 0] }) => {
     return (
         <group position={position}>
+            <Float floatIntensity={0.25} rotationIntensity={0.25}>
+                <Text
+                    scale={0.35}
+                    maxWidth={0.25}
+                    lineHeight={0.75}
+                    textAlign='right'
+                    position={[1, 0.65, 0]}
+                    rotation-y={-0.25}>
+                    Marble Race
+                    <meshBasicMaterial toneMapped={false} />
+                </Text>
+            </Float>
             <mesh geometry={boxGeometry} material={stepOneMaterial} position={[0, -0.1, 0]} scale={[4, 0.2, 4]} receiveShadow />
         </group>
     )
@@ -39,6 +51,18 @@ export const BlockEnd = ({ position = [0, 0, 0] }) => {
 
     return (
         <group position={position}>
+
+            <Text
+                scale={0.35}
+                maxWidth={0.25}
+                lineHeight={0.75}
+                textAlign='right'
+                position={[0, 2.25, 2]}
+            >
+                Finish
+                <meshBasicMaterial toneMapped={false} />
+            </Text>
+
             <mesh geometry={boxGeometry} material={stepOneMaterial} position={[0, 0, 0]} scale={[4, 0.2, 4]} receiveShadow />
             <group position-y={0.56}>
                 <RigidBody type='fixed' colliders="hull" restitution={0.2} friction={0}>
@@ -84,6 +108,7 @@ export const BlockSpinner = ({ position = [0, 0, 0], rotationSpeed, rotationDire
         </group>
     )
 }
+
 
 
 export const BlockLimbo = ({ position = [0, 0, 0] }) => {

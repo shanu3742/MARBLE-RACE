@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import RollTheBallExperience from '../../components/RollTheBallExperience/RollTheBallExperience'
 import './RollTheBall.css'
 import { KeyboardControls } from '@react-three/drei'
+import Interface from '../../components/interface/Interface'
 const RollTheBall = () => {
     return (
         <KeyboardControls
@@ -25,6 +26,7 @@ const RollTheBall = () => {
             >
                 <RollTheBallExperience />
             </Canvas>
+            <Interface />
         </KeyboardControls>
     )
 }
