@@ -8,6 +8,9 @@ import useInterfaceEvent from "../../store/useInterfaceEvent";
 
 
 const Player = () => {
+    const [hitSound] = useState(() => {
+        return new Audio('./audio/ball-bounce.mp3')
+    })
     const start = useGame((state) => state.start);
     const end = useGame((state) => state.end);
     const restart = useGame((state) => state.restart);
@@ -144,8 +147,13 @@ const Player = () => {
             unsubscribeReset()
         }
     }, [])
+    const playSound = () => {
+        hitSound.currentTime = 0;
+        hitSound.volume = Math.random();
+        hitSound.play()
+    }
     return (
-        <RigidBody ref={body} colliders="ball" position={[0, 1, 0]} restitution={0.2} friction={1}>
+        <RigidBody ref={body} colliders="ball" position={[0, 1, 0]} restitution={0.2} friction={1} onCollisionEnter={playSound}>
             <mesh castShadow>
                 <icosahedronGeometry args={[0.3, 1]} />
                 <meshStandardMaterial flatShading color="mediumpurple" />
