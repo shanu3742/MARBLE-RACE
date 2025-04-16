@@ -81,3 +81,34 @@
     pointer-events: none;
     visibility: hidden;
   }
+
+  @media screen and (max-width: 768px) {
+    .controls{
+      position: fixed;
+      width: 100%;
+      bottom: 0px;
+      left: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 50px);
+      grid-template-rows: repeat(3, 50px);
+      gap: 15px;
+      pointer-events: auto;
+      cursor: pointer;
+  }
+    .button {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.6),
+                  inset 0 -4px 8px rgba(255,255,255,0.05);
+      border: 2px solid #444;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.1s, box-shadow 0.2s;
+    }
+  }
+  

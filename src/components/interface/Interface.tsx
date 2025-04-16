@@ -39,23 +39,25 @@ const Interface = () => {
   }, [])
 
   const triggerEvent = useInterfaceEvent((state) => state.triggerEvent);
-
+  const evenType = useInterfaceEvent((state) => state.event);
+  const activeButtonType = evenType?.type
   return <div className="interface">
+
     <div className="time" ref={time}>0.0</div>
     {
       phase === 'ended' && <div className="restart" onClick={restart}>Restart</div>
     }
     <div className='controls'>
       <div className="empty"></div>
-      <button className={`button  ${forward ? 'active' : 'deactive'}`} onClick={() => triggerEvent('forwardIn', { pressed: true })} >↑</button>
+      <button className={`button  ${forward || activeButtonType === 'forwardIn' ? 'active' : 'deactive'}`} onMouseDown={() => triggerEvent('forwardIn', { pressed: true })} onMouseUp={() => triggerEvent(null)} onTouchStart={() => triggerEvent('forwardIn', { pressed: true })} onTouchEnd={() => triggerEvent(null)} >↑</button>
       <div className="empty"></div>
 
-      <button className={`button  ${leftward ? 'active' : 'deactive'}`} onClick={() => triggerEvent('leftwardIn', { pressed: true })} >←</button>
-      <button className={`button  ${jump ? 'active' : 'deactive'}`} onClick={() => triggerEvent('spaceIn', { pressed: true })} >⏺</button>
-      <button className={`button  ${rightward ? 'active' : 'deactive'}`} onClick={() => triggerEvent('rightwardIn', { pressed: true })} >→</button>
+      <button className={`button  ${leftward || activeButtonType === 'leftwardIn' ? 'active' : 'deactive'}`} onMouseDown={() => triggerEvent('leftwardIn', { pressed: true })} onMouseUp={() => triggerEvent(null)} onTouchStart={() => triggerEvent('leftwardIn', { pressed: true })} onTouchEnd={() => triggerEvent(null)} >←</button>
+      <button className={`button  ${jump || activeButtonType === 'spaceIn' ? 'active' : 'deactive'}`} onMouseDown={() => triggerEvent('spaceIn', { pressed: true })} onMouseUp={() => triggerEvent(null)} onTouchStart={() => triggerEvent('spaceIn', { pressed: true })} onTouchEnd={() => triggerEvent(null)}  >⏺</button>
+      <button className={`button  ${rightward || activeButtonType === 'rightwardIn' ? 'active' : 'deactive'}`} onMouseDown={() => triggerEvent('rightwardIn', { pressed: true })} onMouseUp={() => triggerEvent(null)} onTouchStart={() => triggerEvent('rightwardIn', { pressed: true })} onTouchEnd={() => triggerEvent(null)}>→</button>
 
       <div className="empty"></div>
-      <button className={`button  ${backward ? 'active' : 'deactive'}`} onClick={() => triggerEvent('backwardIn', { pressed: true })} >↓</button>
+      <button className={`button  ${backward || activeButtonType === 'backwardIn' ? 'active' : 'deactive'}`} onMouseDown={() => triggerEvent('backwardIn', { pressed: true })} onMouseUp={() => triggerEvent(null)} onTouchStart={() => triggerEvent('backwardIn', { pressed: true })} onTouchEnd={() => triggerEvent(null)}>↓</button>
       <div className="empty"></div>
 
     </div>

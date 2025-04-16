@@ -35,6 +35,12 @@ const RollTheBall = () => {
             }
             {
                 !isInterected && <div className='overlay'>
+                    <img
+                        src="/image/marble-race.png"
+                        alt="game leanding Background"
+                        loading="lazy"
+                        className="full-screen-image"
+                    />
                     <button onClick={() => setIsInterected(true)}>Play</button>
                 </div>
             }

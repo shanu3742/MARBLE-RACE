@@ -6,7 +6,7 @@ const useInterfaceEvent = create((set) => ({
   triggerEvent: (type, payload = {}) => {
     set({ event: { type, payload } });
     // reset it in next tick (simulate one-time event)
-    setTimeout(() => set({ event: null }), 0);
+    // setTimeout(() => set({ event: null }), 0);
   },
 }));
 
