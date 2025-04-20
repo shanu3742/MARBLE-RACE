@@ -1,6 +1,6 @@
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { RigidBody, useRapier } from "@react-three/rapier";
+import { RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from 'three'
 import useGame from "../../store/useGame";
@@ -20,7 +20,7 @@ const Player = () => {
 
     const [smoothCameraPosition] = useState(() => new THREE.Vector3());
     const [smoothCameraTarget] = useState(() => new THREE.Vector3());
-    const body = useRef();
+    const body = useRef<RapierRigidBody | null>(null);
     const { rapier, world } = useRapier();
     const [subscribeKeys, getKeys] = useKeyboardControls()
     useFrame((state, delta) => {
@@ -53,72 +53,80 @@ const Player = () => {
         if (eventType === 'spaceIn') {
             jump();
         }
+        if (body.current) {
+            body.current.applyImpulse(impulse, true);
+            body.current.applyTorqueImpulse(torque, true);
+            /**
+             * camera
+            */
 
-        body.current.applyImpulse(impulse);
-        body.current.applyTorqueImpulse(torque);
+            const bodyPosition = body.current.translation();
 
-        /**
-         * camera
-         */
+            const cameraPosition = new THREE.Vector3();
+            cameraPosition.copy(bodyPosition);
+            cameraPosition.z += 2.25;
+            cameraPosition.y += 0.65;
 
-        const bodyPosition = body.current.translation();
+            const cameraTarget = new THREE.Vector3();
+            cameraTarget.copy(bodyPosition)
+            cameraTarget.y += 0.25;
 
 
+            // lerping 
+            //on each frame , the camera will get slightly closer to wher it's supposed to be and  it'll keep doing that
 
-        const cameraPosition = new THREE.Vector3();
-        cameraPosition.copy(bodyPosition);
-        cameraPosition.z += 2.25;
-        cameraPosition.y += 0.65;
+            smoothCameraPosition.lerp(cameraPosition, 5 * delta);
+            smoothCameraTarget.lerp(cameraPosition, 5 * delta);
+            state.camera.position.copy(smoothCameraPosition);
+            // console.log('lookAt', state.camera.lookAt)
+            state.camera.lookAt(smoothCameraTarget)
 
-        const cameraTarget = new THREE.Vector3();
-        cameraTarget.copy(bodyPosition)
-        cameraTarget.y += 0.25;
+            /**
+             * phase
+             */
 
-        // lerping 
-        //on each frame , the camera will get slightly closer to wher it's supposed to be and  it'll keep doing that
+            const obstacleLevel = blockCount + Math.floor(playerLavel + 3 + playerLavel * 0.05)
+            if (bodyPosition.z < -(obstacleLevel * 4 + 2)) {
+                end()
+            }
 
-        smoothCameraPosition.lerp(cameraPosition, 5 * delta);
-        smoothCameraTarget.lerp(cameraPosition, 5 * delta);
-        state.camera.position.copy(smoothCameraPosition);
-        // console.log('lookAt', state.camera.lookAt)
-        state.camera.lookAt(smoothCameraTarget)
 
-        /**
-         * phase
-         */
+            if (bodyPosition.y < -4) {
 
-        const obstacleLevel = blockCount + Math.floor(playerLavel + 3 + playerLavel * 0.05)
-        if (bodyPosition.z < -(obstacleLevel * 4 + 2)) {
-            end()
+                restart()
+            }
         }
 
 
-        if (bodyPosition.y < -4) {
 
-            restart()
-        }
+
 
 
     })
 
     const jump = () => {
-
-        const origin = body.current.translation();
-        origin.y -= 0.31;
-        const direction = { x: 0, y: -1, z: 0 }
-        const ray = new rapier.Ray(origin, direction)
-        const hit = world.castRay(ray, 10, true);
-        if (hit.timeOfImpact < 0.15) {
-            body.current.applyImpulse({ x: 0, y: 0.5, z: 0 })
+        if (body.current) {
+            const origin = body.current.translation();
+            origin.y -= 0.31;
+            const direction = { x: 0, y: -1, z: 0 }
+            const ray = new rapier.Ray(origin, direction)
+            const hit = world.castRay(ray, 10, true);
+            if (hit && hit.timeOfImpact < 0.15) {
+                body.current.applyImpulse({ x: 0, y: 0.5, z: 0 }, true)
+            }
         }
+
 
 
     }
 
     const reset = () => {
-        body.current.setTranslation({ x: 0, y: 1, z: 0 })
-        body.current.setLinvel({ x: 0, y: 0, z: 0 })
-        body.current.setAngvel({ x: 0, y: 0, z: 0 })
+        if (body.current) {
+            body.current.setTranslation({ x: 0, y: 1, z: 0 }, true)
+            body.current.setLinvel({ x: 0, y: 0, z: 0 }, true)
+            body.current.setAngvel({ x: 0, y: 0, z: 0 }, true)
+        }
+
     }
 
     useEffect(() => {
