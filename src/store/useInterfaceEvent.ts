@@ -1,6 +1,5 @@
 // store/useEventStore.js
 import { create } from 'zustand';
-
 const useInterfaceEvent = create((set) => ({
   event: null,
   triggerEvent: (type, payload = {}) => {

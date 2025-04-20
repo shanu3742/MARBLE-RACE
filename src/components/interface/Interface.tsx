@@ -31,7 +31,10 @@ const Interface = () => {
       elapsedTime = elapsedTime.toFixed(2);
 
       if (time.current) {
-        time.current.textContent = elapsedTime
+        if (time.current.textContent !== elapsedTime) {
+          time.current.textContent = elapsedTime
+        }
+
       }
 
     })
@@ -40,7 +43,15 @@ const Interface = () => {
 
   const triggerEvent = useInterfaceEvent((state) => state.triggerEvent);
   const evenType = useInterfaceEvent((state) => state.event);
-  const activeButtonType = evenType?.type
+  const activeButtonType = evenType?.type;
+  const start = useGame((state) => state.start);
+  const playerClick = (clickType, clickEvent) => {
+    triggerEvent(clickType, clickEvent)
+    start()
+  }
+  const playerRestClick = () => {
+    triggerEvent(null)
+  }
   return <div className="interface">
 
     <div className="time" ref={time}>0.0</div>
@@ -49,15 +60,15 @@ const Interface = () => {
     }
     <div className='controls'>
       <div className="empty"></div>
-      <button className={`button  ${forward || activeButtonType === 'forwardIn' ? 'active' : 'deactive'}`} onMouseDown={() => triggerEvent('forwardIn', { pressed: true })} onMouseUp={() => triggerEvent(null)} onTouchStart={() => triggerEvent('forwardIn', { pressed: true })} onTouchEnd={() => triggerEvent(null)} >↑</button>
+      <button className={`button  ${forward || activeButtonType === 'forwardIn' ? 'active' : 'deactive'}`} onMouseDown={() => playerClick('forwardIn', { pressed: true })} onMouseUp={() => playerRestClick()} onTouchStart={() => playerClick('forwardIn', { pressed: true })} onTouchEnd={() => playerRestClick()} >↑</button>
       <div className="empty"></div>
 
-      <button className={`button  ${leftward || activeButtonType === 'leftwardIn' ? 'active' : 'deactive'}`} onMouseDown={() => triggerEvent('leftwardIn', { pressed: true })} onMouseUp={() => triggerEvent(null)} onTouchStart={() => triggerEvent('leftwardIn', { pressed: true })} onTouchEnd={() => triggerEvent(null)} >←</button>
-      <button className={`button  ${jump || activeButtonType === 'spaceIn' ? 'active' : 'deactive'}`} onMouseDown={() => triggerEvent('spaceIn', { pressed: true })} onMouseUp={() => triggerEvent(null)} onTouchStart={() => triggerEvent('spaceIn', { pressed: true })} onTouchEnd={() => triggerEvent(null)}  >⏺</button>
-      <button className={`button  ${rightward || activeButtonType === 'rightwardIn' ? 'active' : 'deactive'}`} onMouseDown={() => triggerEvent('rightwardIn', { pressed: true })} onMouseUp={() => triggerEvent(null)} onTouchStart={() => triggerEvent('rightwardIn', { pressed: true })} onTouchEnd={() => triggerEvent(null)}>→</button>
+      <button className={`button  ${leftward || activeButtonType === 'leftwardIn' ? 'active' : 'deactive'}`} onMouseDown={() => playerClick('leftwardIn', { pressed: true })} onMouseUp={() => playerRestClick()} onTouchStart={() => playerClick('leftwardIn', { pressed: true })} onTouchEnd={() => playerRestClick()} >←</button>
+      <button className={`button  ${jump || activeButtonType === 'spaceIn' ? 'active' : 'deactive'}`} onMouseDown={() => playerClick('spaceIn', { pressed: true })} onMouseUp={() => playerRestClick()} onTouchStart={() => playerClick('spaceIn', { pressed: true })} onTouchEnd={() => playerRestClick()}  >⏺</button>
+      <button className={`button  ${rightward || activeButtonType === 'rightwardIn' ? 'active' : 'deactive'}`} onMouseDown={() => playerClick('rightwardIn', { pressed: true })} onMouseUp={() => playerRestClick()} onTouchStart={() => playerClick('rightwardIn', { pressed: true })} onTouchEnd={() => playerRestClick()}>→</button>
 
       <div className="empty"></div>
-      <button className={`button  ${backward || activeButtonType === 'backwardIn' ? 'active' : 'deactive'}`} onMouseDown={() => triggerEvent('backwardIn', { pressed: true })} onMouseUp={() => triggerEvent(null)} onTouchStart={() => triggerEvent('backwardIn', { pressed: true })} onTouchEnd={() => triggerEvent(null)}>↓</button>
+      <button className={`button  ${backward || activeButtonType === 'backwardIn' ? 'active' : 'deactive'}`} onMouseDown={() => playerClick('backwardIn', { pressed: true })} onMouseUp={() => playerRestClick()} onTouchStart={() => playerClick('backwardIn', { pressed: true })} onTouchEnd={() => playerRestClick()}>↓</button>
       <div className="empty"></div>
 
     </div>

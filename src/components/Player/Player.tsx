@@ -90,7 +90,9 @@ const Player = () => {
             end()
         }
 
+
         if (bodyPosition.y < -4) {
+
             restart()
         }
 
