@@ -9,12 +9,14 @@ import useInterfaceEvent from '../../store/useInterfaceEvent';
 const Interface = () => {
   const time = useRef();
   const restart = useGame((state) => state.restart)
+  const updateLevel = useGame((state) => state.updateLevel)
   const phase = useGame((state) => state.phase)
   const forward = useKeyboardControls((state) => state.forward);
   const backward = useKeyboardControls((state) => state.backward);
   const leftward = useKeyboardControls((state) => state.leftward);
   const rightward = useKeyboardControls((state) => state.rightward);
   const jump = useKeyboardControls((state) => state.jump);
+  const playerLavel = useGame((state) => state.playerLavel);
 
 
   useEffect(() => {
@@ -52,11 +54,15 @@ const Interface = () => {
   const playerRestClick = () => {
     triggerEvent(null)
   }
+  const OnRestart = () => {
+    restart()
+    updateLevel()
+  }
   return <div className="interface">
-
+    <div className='player-level' style={{ color: 'yellow' }}>Player Level:<span style={{ color: 'red' }}>{playerLavel + 1}</span></div>
     <div className="time" ref={time}>0.0</div>
     {
-      phase === 'ended' && <div className="restart" onClick={restart}>Restart</div>
+      phase === 'ended' && <div className="restart" onClick={OnRestart}>Restart</div>
     }
     <div className='controls'>
       <div className="empty"></div>

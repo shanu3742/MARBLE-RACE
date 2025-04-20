@@ -47,7 +47,7 @@ export const BlockEnd = ({ position = [0, 0, 0] }) => {
             })
         }
         return geometry
-    }, [])
+    }, [dragon.scene])
 
     return (
         <group position={position}>
@@ -65,7 +65,7 @@ export const BlockEnd = ({ position = [0, 0, 0] }) => {
 
             <mesh geometry={boxGeometry} material={stepOneMaterial} position={[0, 0, 0]} scale={[4, 0.2, 4]} receiveShadow />
             <group position-y={0.56}>
-                <RigidBody type='fixed' colliders="hull" restitution={0.2} friction={0}>
+                <RigidBody type='fixed' colliders="hull" restitution={0.2} friction={0} key={`${position[0]}-${position[1]}-${position[2]}-${Math.floor(Math.random() * 100)}`} >
                     {/* <primitive object={dragon.scene} scale={2} /> */}
                     <mesh geometry={dragonGeo} receiveShadow castShadow >
                         <meshBasicMaterial map={dragonTexture} />
@@ -152,7 +152,7 @@ export const BlockAxe = ({ position = [0, 0, 0] }) => {
 
 const Bounds = ({ length = 1 }) => {
     return (
-        <RigidBody type='fixed' restitution={0.2} friction={0}>
+        <RigidBody type='fixed' restitution={0.2} friction={0} key={length}>
             <mesh
                 position={[2.15, 0.75, -(length * 2) + 2]}
                 geometry={boxGeometry}

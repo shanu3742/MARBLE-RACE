@@ -76,6 +76,11 @@
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
     background: linear-gradient(145deg, #ababed, #5252e7);
   }
+  .player-level{
+    position: fixed;
+    right: 0%;
+    bottom:0%;
+  }
 
   .empty {
     pointer-events: none;

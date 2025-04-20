@@ -4,7 +4,8 @@ import {subscribeWithSelector} from 'zustand/middleware'
 
 const useGame=  create(subscribeWithSelector((set) =>{
     return {
-        blockCount:5,
+        blockCount:15,
+        playerLavel:+((JSON.parse(localStorage.getItem('level') as any))??0),
         startTime:0,
         endTime:0,
         phase:'ready',
@@ -32,6 +33,14 @@ const useGame=  create(subscribeWithSelector((set) =>{
                     return {phase:"ended",endTime:Date.now()}
                 }
                 return {}
+            })
+        },
+        updateLevel(){
+            set((state) => {
+                    const levels = state.playerLavel+1
+                    localStorage.setItem('level',JSON.stringify(levels))
+                    return {playerLavel: levels}
+               
             })
         }
     }

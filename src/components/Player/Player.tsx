@@ -15,6 +15,7 @@ const Player = () => {
     const end = useGame((state) => state.end);
     const restart = useGame((state) => state.restart);
     const blockCount = useGame((state) => state.blockCount);
+    const playerLavel = useGame((state) => state.playerLavel);
 
 
     const [smoothCameraPosition] = useState(() => new THREE.Vector3());
@@ -86,7 +87,8 @@ const Player = () => {
          * phase
          */
 
-        if (bodyPosition.z < -(blockCount * 4 + 2)) {
+        const obstacleLevel = blockCount + Math.floor(playerLavel + 3 + playerLavel * 0.05)
+        if (bodyPosition.z < -(obstacleLevel * 4 + 2)) {
             end()
         }
 
