@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react';
 import useInterfaceEvent from '../../store/useInterfaceEvent';
 
 const Interface = () => {
-  const time = useRef();
+  const time = useRef<HTMLDivElement | null>(null);
   const restart = useGame((state) => state.restart)
   const updateLevel = useGame((state) => state.updateLevel)
   const phase = useGame((state) => state.phase)
@@ -30,11 +30,11 @@ const Interface = () => {
         elapsedTime = state.endTime - state.startTime;
       }
       elapsedTime /= 1000;
-      elapsedTime = elapsedTime.toFixed(2);
+      elapsedTime = elapsedTime.toFixed(2) as any;
 
       if (time.current) {
-        if (time.current.textContent !== elapsedTime) {
-          time.current.textContent = elapsedTime
+        if ((time.current.textContent as any) !== (elapsedTime as any)) {
+          time.current.textContent = elapsedTime as any
         }
 
       }
@@ -52,7 +52,7 @@ const Interface = () => {
     start()
   }
   const playerRestClick = () => {
-    triggerEvent(null)
+    triggerEvent(null!)
   }
   const OnRestart = () => {
     restart()

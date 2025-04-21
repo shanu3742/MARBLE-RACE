@@ -1,19 +1,21 @@
 import { useGLTF, useTexture, Float, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { CuboidCollider, RigidBody } from '@react-three/rapier';
-import { useMemo, useRef, useState } from 'react';
-import * as THREE from 'three'
+import { CuboidCollider, RapierRigidBody, RigidBody } from '@react-three/rapier';
+import { ReactElement, useMemo, useRef, useState } from 'react';
+import * as THREE from 'three';
+
 enum rotationDirEnum {
     clockwise = -1,
-    antiClockwise = 1
+    antiClockwise = 1,
 }
-const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-const stepOneMaterial = new THREE.MeshStandardMaterial({ color: "#111111" })
-const stepTwoMaterial = new THREE.MeshStandardMaterial({ color: "#222222" })
-const obstacleMaterial = new THREE.MeshStandardMaterial({ color: "#ff0000" })
-const wallMaterial = new THREE.MeshStandardMaterial({ color: "#887777" })
 
-export const BlockStart = ({ position = [0, 0, 0] }) => {
+const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+const stepOneMaterial = new THREE.MeshStandardMaterial({ color: '#111111' });
+const stepTwoMaterial = new THREE.MeshStandardMaterial({ color: '#222222' });
+const obstacleMaterial = new THREE.MeshStandardMaterial({ color: '#ff0000' });
+const wallMaterial = new THREE.MeshStandardMaterial({ color: '#887777' });
+
+export const BlockStart: MeshComponent = ({ position = [0, 0, 0] }) => {
     return (
         <group position={position}>
             <Float floatIntensity={0.25} rotationIntensity={0.25}>
@@ -28,71 +30,100 @@ export const BlockStart = ({ position = [0, 0, 0] }) => {
                     <meshBasicMaterial toneMapped={false} />
                 </Text>
             </Float>
-            <mesh geometry={boxGeometry} material={stepOneMaterial} position={[0, -0.1, 0]} scale={[4, 0.2, 4]} receiveShadow />
+            <mesh
+                geometry={boxGeometry}
+                material={stepOneMaterial}
+                position={[0, -0.1, 0]}
+                scale={[4, 0.2, 4]}
+                receiveShadow
+            />
         </group>
-    )
-}
-export const BlockEnd = ({ position = [0, 0, 0] }) => {
+    );
+};
+
+export const BlockEnd: MeshComponent = ({ position = [0, 0, 0] }) => {
     const dragon = useGLTF('./gltf/dragon.glb');
     const dragonTexture = useTexture('./textures/dragon.png');
 
-
-    let dragonGeo = useMemo(() => {
-        let geometry;
+    const dragonGeo = useMemo(() => {
+        let geometry: THREE.BufferGeometry | undefined;
         if (dragon.scene) {
             dragon.scene.traverse((child) => {
-                if (child.isMesh) {
-                    geometry = child.geometry
+                if ((child as THREE.Mesh).isMesh) {
+                    geometry = (child as THREE.Mesh).geometry;
                 }
-            })
+            });
         }
-        return geometry
-    }, [dragon.scene])
+        return geometry;
+    }, [dragon.scene]);
 
     return (
         <group position={position}>
-
             <Text
                 scale={0.35}
                 maxWidth={0.25}
                 lineHeight={0.75}
                 textAlign='right'
-                position={[0, 2.25, 2]}
-            >
+                position={[0, 2.25, 2]}>
                 Finish
                 <meshBasicMaterial toneMapped={false} />
             </Text>
 
-            <mesh geometry={boxGeometry} material={stepOneMaterial} position={[0, 0, 0]} scale={[4, 0.2, 4]} receiveShadow />
+            <mesh
+                geometry={boxGeometry}
+                material={stepOneMaterial}
+                position={[0, 0, 0]}
+                scale={[4, 0.2, 4]}
+                receiveShadow
+            />
             <group position-y={0.56}>
-                <RigidBody type='fixed' colliders="hull" restitution={0.2} friction={0} key={`${position[0]}-${position[1]}-${position[2]}-${Math.floor(Math.random() * 100)}`} >
-                    {/* <primitive object={dragon.scene} scale={2} /> */}
-                    <mesh geometry={dragonGeo} receiveShadow castShadow >
+                <RigidBody
+                    type='fixed'
+                    colliders='hull'
+                    restitution={0.2}
+                    friction={0}
+                    key={`${position[0]}-${position[1]}-${position[2]}-${Math.floor(Math.random() * 100)}`}>
+                    <mesh geometry={dragonGeo} receiveShadow castShadow>
                         <meshBasicMaterial map={dragonTexture} />
                     </mesh>
                 </RigidBody>
             </group>
-
         </group>
-    )
-}
-export const BlockSpinner = ({ position = [0, 0, 0], rotationSpeed, rotationDirection }) => {
-    if (!rotationDirection) {
-        rotationDirection = (Math.random() - 0.5) < 0 ? rotationDirEnum.antiClockwise : rotationDirEnum.clockwise
-    }
-    if (!rotationSpeed) {
-        rotationSpeed = 1 + Math.random() * 0.5
-    }
-    const obstacle = useRef();
+    );
+};
+
+export const BlockSpinner: MeshComponent = ({
+    position = [0, 0, 0],
+    rotationSpeed,
+    rotationDirection,
+}) => {
+    const direction =
+        rotationDirection !== undefined
+            ? rotationDirection
+            : Math.random() < 0.5
+                ? rotationDirEnum.antiClockwise
+                : rotationDirEnum.clockwise;
+
+    const speed = rotationSpeed !== undefined ? rotationSpeed : 1 + Math.random() * 0.5;
+
+    const obstacle = useRef<RapierRigidBody | null>(null);
+
     useFrame((state) => {
         const time = state.clock.getElapsedTime();
         const rotation = new THREE.Quaternion();
-        rotation.setFromEuler(new THREE.Euler(0, time * rotationSpeed * rotationDirection, 0))
-        obstacle.current.setNextKinematicRotation(rotation)
-    })
+        rotation.setFromEuler(new THREE.Euler(0, time * speed * direction, 0));
+        obstacle.current?.setNextKinematicRotation(rotation);
+    });
+
     return (
         <group position={position}>
-            <mesh geometry={boxGeometry} material={stepTwoMaterial} position={[0, -0.1, 0]} scale={[4, 0.2, 4]} receiveShadow />
+            <mesh
+                geometry={boxGeometry}
+                material={stepTwoMaterial}
+                position={[0, -0.1, 0]}
+                scale={[4, 0.2, 4]}
+                receiveShadow
+            />
             <RigidBody
                 ref={obstacle}
                 type='kinematicPosition'
@@ -100,57 +131,88 @@ export const BlockSpinner = ({ position = [0, 0, 0], rotationSpeed, rotationDire
                 restitution={0.2}
                 friction={1}
                 linearDamping={0.5}
-                angularDamping={0.5}
-            >
-                <mesh geometry={boxGeometry} material={obstacleMaterial} scale={[3.5, 0.3, 0.3]} castShadow receiveShadow />
+                angularDamping={0.5}>
+                <mesh
+                    geometry={boxGeometry}
+                    material={obstacleMaterial}
+                    scale={[3.5, 0.3, 0.3]}
+                    castShadow
+                    receiveShadow
+                />
             </RigidBody>
-
         </group>
-    )
-}
+    );
+};
 
+export const BlockLimbo: MeshComponent = ({ position = [0, 0, 0] }) => {
+    const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
+    const obstacle = useRef<RapierRigidBody | null>(null);
 
-
-export const BlockLimbo = ({ position = [0, 0, 0] }) => {
-    const [timeOffset] = useState(() => Math.random() * Math.PI * 2)
-    const obstacle = useRef();
     useFrame((state) => {
         const time = state.clock.getElapsedTime();
         const y = Math.sin(time + timeOffset) + 1.15;
-        obstacle.current.setNextKinematicTranslation({ x: position[0], y: position[1] + y, z: position[2] })
-    })
+        obstacle.current?.setNextKinematicTranslation({ x: position[0], y: position[1] + y, z: position[2] });
+    });
+
     return (
         <group position={position}>
-            <mesh geometry={boxGeometry} material={stepTwoMaterial} position={[0, -0.1, 0]} scale={[4, 0.2, 4]} receiveShadow />
+            <mesh
+                geometry={boxGeometry}
+                material={stepTwoMaterial}
+                position={[0, -0.1, 0]}
+                scale={[4, 0.2, 4]}
+                receiveShadow
+            />
             <RigidBody ref={obstacle} type='kinematicPosition' position={[0, 0.3, 0]} restitution={0.2} friction={0}>
-                <mesh geometry={boxGeometry} material={obstacleMaterial} scale={[3.5, 0.3, 0.3]} castShadow receiveShadow />
+                <mesh
+                    geometry={boxGeometry}
+                    material={obstacleMaterial}
+                    scale={[3.5, 0.3, 0.3]}
+                    castShadow
+                    receiveShadow
+                />
             </RigidBody>
-
         </group>
-    )
-}
+    );
+};
 
-export const BlockAxe = ({ position = [0, 0, 0] }) => {
-    const [timeOffset] = useState(() => Math.random() * Math.PI * 2)
-    const obstacle = useRef();
+export const BlockAxe: MeshComponent = ({ position = [0, 0, 0] }) => {
+    const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
+    const obstacle = useRef<RapierRigidBody | any>(null);
+
     useFrame((state) => {
         const time = state.clock.getElapsedTime();
         const x = Math.sin(time + timeOffset) * 1.25;
-        obstacle.current.setNextKinematicTranslation({ x: position[0] + x, y: position[1] + 0.75, z: position[2] })
-    })
+        obstacle.current?.setNextKinematicTranslation({
+            x: position[0] + x,
+            y: position[1] + 0.75,
+            z: position[2],
+        });
+    });
+
     return (
         <group position={position}>
-            <mesh geometry={boxGeometry} material={stepTwoMaterial} position={[0, -0.1, 0]} scale={[4, 0.2, 4]} receiveShadow />
+            <mesh
+                geometry={boxGeometry}
+                material={stepTwoMaterial}
+                position={[0, -0.1, 0]}
+                scale={[4, 0.2, 4]}
+                receiveShadow
+            />
             <RigidBody ref={obstacle} type='kinematicPosition' position={[0, 0.3, 0]} restitution={0.2} friction={0}>
-                <mesh geometry={boxGeometry} material={obstacleMaterial} scale={[1.5, 1.5, 0.3]} castShadow receiveShadow />
+                <mesh
+                    geometry={boxGeometry}
+                    material={obstacleMaterial}
+                    scale={[1.5, 1.5, 0.3]}
+                    castShadow
+                    receiveShadow
+                />
             </RigidBody>
-
         </group>
-    )
-}
+    );
+};
 
-
-const Bounds = ({ length = 1 }) => {
+const Bounds = ({ length = 1 }: { length?: number }) => {
     return (
         <RigidBody type='fixed' restitution={0.2} friction={0} key={length}>
             <mesh
@@ -158,50 +220,68 @@ const Bounds = ({ length = 1 }) => {
                 geometry={boxGeometry}
                 material={wallMaterial}
                 scale={[0.3, 1.5, 4 * length]}
-                castShadow />
+                castShadow
+            />
 
             <mesh
                 position={[-2.15, 0.75, -(length * 2) + 2]}
                 geometry={boxGeometry}
                 material={wallMaterial}
                 scale={[0.3, 1.5, 4 * length]}
-                receiveShadow />
+                receiveShadow
+            />
             <mesh
                 position={[0, 0.75, -(length * 4) + 2]}
                 geometry={boxGeometry}
                 material={wallMaterial}
                 scale={[4, 1.5, 0.3]}
-                receiveShadow />
+                receiveShadow
+            />
 
-            <CuboidCollider args={[2, 0.1, 2 * length]} position={[0, -0.1, -(length * 2) + 2]} restitution={0.2} friction={1} />
+            <CuboidCollider
+                args={[2, 0.1, 2 * length]}
+                position={[0, -0.1, -(length * 2) + 2]}
+                restitution={0.2}
+                friction={1}
+            />
         </RigidBody>
     );
-}
-const Level = ({ level = 5, types = [BlockSpinner, BlockLimbo, BlockAxe] }) => {
+};
+
+const Level = ({ level = 5, types = [BlockSpinner, BlockLimbo, BlockAxe] }: LevelProps) => {
     const blocks = useMemo(() => {
-        const blockList = [];
+        const blockList: MeshComponent[] = [];
         for (let i = 0; i < level; i++) {
-            let selectedBlock = Math.floor(Math.random() * types.length);
+            const selectedBlock = Math.floor(Math.random() * types.length);
             const type = types[selectedBlock];
-            blockList.push(type)
+            blockList.push(type);
         }
-        return blockList
-    }, [level, types])
+        return blockList;
+    }, [level, types]);
 
     return (
         <>
-
             <BlockStart position={[0, 0, 0]} />
-            {
-                blocks.map((Block, BlockIndex) => {
-                    return <Block key={BlockIndex} position={[0, 0, -(BlockIndex + 1) * 4]} />
-                })
-            }
-
+            {blocks.map((Block, BlockIndex) => (
+                <Block key={BlockIndex} position={[0, 0, -(BlockIndex + 1) * 4]} />
+            ))}
             <BlockEnd position={[0, 0, -(level + 1) * 4]} />
             <Bounds length={level + 2} />
         </>
-    )
+    );
+};
+
+export default Level;
+
+type MeshComponent = (props: MeshProps) => ReactElement;
+
+interface MeshProps {
+    position?: [number, number, number];
+    rotationSpeed?: number;
+    rotationDirection?: rotationDirEnum;
 }
 
-export default Level
+interface LevelProps {
+    level?: number;
+    types?: MeshComponent[];
+}
