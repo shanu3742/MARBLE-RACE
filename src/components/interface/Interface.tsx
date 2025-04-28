@@ -5,6 +5,8 @@ import './Interface.css'
 import { useKeyboardControls } from '@react-three/drei'
 import { useEffect, useRef } from 'react';
 import useInterfaceEvent from '../../store/useInterfaceEvent';
+import { IonButton, IonIcon, isPlatform } from '@ionic/react';
+import { arrowDown } from 'ionicons/icons';
 
 const Interface = () => {
   const time = useRef<HTMLDivElement | null>(null);
@@ -47,6 +49,7 @@ const Interface = () => {
   const evenType = useInterfaceEvent((state) => state.event);
   const activeButtonType = evenType?.type;
   const start = useGame((state) => state.start);
+
   const playerClick = (clickType, clickEvent) => {
     triggerEvent(clickType, clickEvent)
     start()
@@ -54,11 +57,29 @@ const Interface = () => {
   const playerRestClick = () => {
     triggerEvent(null!)
   }
+
   const OnRestart = () => {
     restart()
     updateLevel()
   }
+
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = '/download/app-release.apk';
+    link.download = 'marbleRace.apk';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return <div className="interface">
+    {
+      !isPlatform('capacitor') && <div className='download-button'>
+        <IonButton size="small" shape="round" color="medium" onClick={handleDownload}>
+          <IonIcon slot="icon-only" icon={arrowDown}></IonIcon>
+        </IonButton>
+      </div>
+    }
     <div className='player-level' style={{ color: 'yellow' }}>Player Level:<span style={{ color: 'red' }}>{playerLavel + 1}</span></div>
     <div className="time" ref={time}>0.0</div>
     {

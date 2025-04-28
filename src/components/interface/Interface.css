@@ -81,7 +81,13 @@
     right: 0%;
     bottom:0%;
   }
-
+.download-button{
+  position: fixed;
+  right: 0%;
+  top: 0%;
+  cursor: pointer;
+  pointer-events:all;
+}
   .empty {
     pointer-events: none;
     visibility: hidden;
