@@ -1,5 +1,7 @@
 {
-  "name": "myApp",
-  "integrations": {},
+  "name": "Marble Race",
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "react-vite"
 }

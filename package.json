@@ -1,5 +1,5 @@
 {
-  "name": "myApp",
+  "name": "Marble Race",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -12,7 +12,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@capacitor/android": "7.2.0",
+    "@capacitor/app": "7.0.1",
     "@capacitor/core": "7.2.0",
+    "@capacitor/haptics": "7.0.1",
+    "@capacitor/keyboard": "7.0.1",
+    "@capacitor/status-bar": "7.0.1",
     "@ionic/react": "^8.5.0",
     "@ionic/react-router": "^8.5.0",
     "@react-three/drei": "^10.0.5",
@@ -30,6 +35,7 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "7.2.0",
     "@testing-library/dom": ">=7.21.4",
     "@testing-library/jest-dom": "^5.16.5",
@@ -52,5 +58,5 @@
     "vite": "~5.2.0",
     "vitest": "^0.34.6"
   },
-  "description": "An Ionic project"
+  "description": "From mastering logic in JavaScript, building dynamic interfaces with Angular and React, refining precision with TypeScript, bringing data to life with D3.js, and shaping 3D worlds in Three.js—each skill adds a new layer to my craft. Next in the bucket: AR and VR, where imagination becomes experience"
 }

@@ -4,9 +4,12 @@
 /node_modules
 /.pnp
 .pnp.js
+marblerace.jks
 
 # testing
 /coverage
+/android
+/dist
 
 # production
 /dist
